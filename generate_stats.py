@@ -12,12 +12,13 @@ def sort_dict(dictionary, column):
 
 
 #open the file and read it
-file = open('2022 Full Log.txt', 'r')
+file = open('2023 Full Log.txt', 'r')
 lines = file.readlines()
 
 without_line_breaks = []
 days_gone = []
 thoughts_of_the_days = []
+daily_ratings = []
 
 
 #list of boyos and games
@@ -53,6 +54,8 @@ for game in games_played:
             games_counters_total[game] += 1
         if 'thoughts of the day:' in str(entry):
             thoughts_of_the_days.append(entry.split(':')[1])
+        if 'rating:' in str(entry):
+            daily_ratings.append(entry.split(':')[1])
 
 
 
@@ -67,6 +70,7 @@ games_counters_total = sorted(items, key=lambda x: x[1], reverse=True)
 print(sessions)
 print(games_counters_total)
 print(len(thoughts_of_the_days))
+print("Ratings: " + str(daily_ratings))
 
 
 
