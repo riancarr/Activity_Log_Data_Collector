@@ -68,8 +68,12 @@ for entry in without_line_breaks:
         players_list.extend(found_players)
 
         found_games = re.findall(game_pattern, entry)
+
+        # Remove the opening bracket from each found game
+        cleaned_games = [game.rstrip('(') for game in found_games]
+
         #Check if the length of the captured text is less than or equal to 8 words. This removes a LOT of full sentences that arent games
-        valid_games = [game for game in found_games if len(re.findall(r'\b\w+\b', game)) <= 8]
+        valid_games = [game for game in cleaned_games if len(re.findall(r'\b\w+\b', game)) <= 8]
 
         games_list.extend(valid_games)
 
@@ -80,7 +84,7 @@ unique_games_set = set(games_list)
 #output file to text for filtering manually
 #TODO: maybe have the above commented out code read this txt file and generate a bunch of checkboxes to be used to populate the variable in generate_stats
 players_output_filename = 'unfiltered_players_list.txt'
-games_output_filename = 'unique_games.txt'
+games_output_filename = 'unfiltered_unique_games.txt'
 
 with open(players_output_filename, 'w') as players_output_file:
     players_output_file.write('#Copy and Paste the following line onto line 869 of generate_stats.py\n#Remove any words that arent the names of people youve played with\nplayed_with = [' + str(unique_players_set) + ']')
