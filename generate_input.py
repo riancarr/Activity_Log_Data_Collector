@@ -57,26 +57,38 @@ for entry in lines:
 
 #generate list of played with players (for filtering and pasting)
 player_pattern = r',\s*(\w+)'
-game_pattern = r'\(\s*(\w+)'
+game_pattern = r'[^-]([^:]+?\()'
 
 players_list = []
 games_list = []
 
 for entry in without_line_breaks:
-    found_players = re.findall(player_pattern, entry)
-    players_list.extend(found_players)
+    if not entry.startswith('- thoughts of the day') and ':(' not in entry:
+        found_players = re.findall(player_pattern, entry)
+        players_list.extend(found_players)
 
-#Convert the list to a set to get unique values
+        found_games = re.findall(game_pattern, entry)
+        #Check if the length of the captured text is less than or equal to 8 words. This removes a LOT of full sentences that arent games
+        valid_games = [game for game in found_games if len(re.findall(r'\b\w+\b', game)) <= 8]
+
+        games_list.extend(valid_games)
+
+#Convert the lists into sets to get unique values
 unique_players_set = set(players_list)
+unique_games_set = set(games_list)
 
 #output file to text for filtering manually
 #TODO: maybe have the above commented out code read this txt file and generate a bunch of checkboxes to be used to populate the variable in generate_stats
-output_filename = 'unfiltered_players_list.txt'
-with open(output_filename, 'w') as output_file:
-    output_file.write('#Copy and Paste the following line onto line 869 of generate_stats.py\n#Remove any words that arent the names of people youve played with\nplayed_with = [' + str(unique_players_set) + ']')
+players_output_filename = 'unfiltered_players_list.txt'
+games_output_filename = 'unique_games.txt'
 
+with open(players_output_filename, 'w') as players_output_file:
+    players_output_file.write('#Copy and Paste the following line onto line 869 of generate_stats.py\n#Remove any words that arent the names of people youve played with\nplayed_with = [' + str(unique_players_set) + ']')
+with open(games_output_filename, 'w') as games_output_file:
+    games_output_file.write('#Copy and Paste the following line onto line 870 of generate_stats.py\n#Remove any lines that arent explicitly games youve played\ngames_played = [' + str(unique_games_set) + ']')
 
 print("Players list: " + str(unique_players_set))
+
 
 
 
